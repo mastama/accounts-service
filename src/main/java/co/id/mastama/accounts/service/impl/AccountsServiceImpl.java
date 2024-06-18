@@ -1,17 +1,22 @@
 package co.id.mastama.accounts.service.impl;
 
 import co.id.mastama.accounts.constants.AccountsConstants;
+import co.id.mastama.accounts.dto.AccountsDto;
 import co.id.mastama.accounts.dto.CustomerDto;
 import co.id.mastama.accounts.entity.Accounts;
 import co.id.mastama.accounts.entity.Customer;
 import co.id.mastama.accounts.exception.CustomerAlreadyExistsException;
+import co.id.mastama.accounts.exception.ResourceNotFoundException;
+import co.id.mastama.accounts.mapper.AccountsMapper;
 import co.id.mastama.accounts.mapper.CustomerMapper;
 import co.id.mastama.accounts.repository.AccountsRepository;
 import co.id.mastama.accounts.repository.CustomerRepository;
 import co.id.mastama.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -56,4 +61,24 @@ public class AccountsServiceImpl implements IAccountsService {
         log.info("End Creating new account {}", customer.getMobileNumber());
         return account;
     }
+
+    @Override
+    public CustomerDto fetchAccount(String mobleNumber) {
+        log.info("Start Fetching account {}", mobleNumber);
+        // check if customer with mobile number is existing
+        Customer customer = customerRepository.findByMobileNumber(mobleNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobleNumber)
+        );
+        // check if account with mobile number is existing
+        Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Accounts", "customerId", mobleNumber)
+        );
+        //mapping data
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
+
+        log.info("End Fetching account {}", mobleNumber);
+        return customerDto;
+    }
+
 }

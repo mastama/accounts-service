@@ -7,4 +7,10 @@ public interface IAccountsService {
      * @param customerDto - CustomerDto Object
      */
     void createAccount(CustomerDto customerDto);
+
+    /**
+     * @param mobleNumber - Input Mobile Number
+     * @reutrn Accounts Details based on a given mobileNumber
+     */
+    CustomerDto fetchAccount(String mobleNumber);
 }
