@@ -4,23 +4,27 @@ import co.id.mastama.accounts.constants.AccountsConstants;
 import co.id.mastama.accounts.dto.CustomerDto;
 import co.id.mastama.accounts.dto.ResponseDto;
 import co.id.mastama.accounts.service.IAccountsService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @Slf4j
+@Validated
 public class AccountsController {
 
     private final IAccountsService iAccountsService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
         log.info("Incoming Create account {}", customerDto);
         iAccountsService.createAccount(customerDto);
         log.info("Outgoing Create account: {}", customerDto);
@@ -30,7 +34,9 @@ public class AccountsController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<ResponseDto> fetchAccountDetails(@RequestParam String mobileNumber) {
+    public ResponseEntity<ResponseDto> fetchAccountDetails(@RequestParam
+                                                               @Pattern(regexp = "^\\d{11,13}$", message = "MobileNumber must be numbers only and should be between 11 to 13 digits")
+                                                               String mobileNumber) {
         log.info("Incoming Fetch account {}", mobileNumber);
         CustomerDto customerDto = iAccountsService.fetchAccount(mobileNumber);
         log.info("Outgoing Fetch account: {}", customerDto);
@@ -40,7 +46,7 @@ public class AccountsController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         log.info("Incoming Update account {}", customerDto);
         boolean isUpdated = iAccountsService.updateAccount(customerDto);
         if (isUpdated) {
@@ -56,7 +62,9 @@ public class AccountsController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber) {
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam
+                                                                @Pattern(regexp = "^\\d{11,13}$", message = "MobileNumber must be numbers only and should be between 11 to 13 digits")
+                                                                String mobileNumber) {
         log.info("Incoming Delete account {}", mobileNumber);
         boolean isDeleted = iAccountsService.deleteAccount(mobileNumber);
         if (isDeleted) {
