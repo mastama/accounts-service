@@ -38,4 +38,20 @@ public class AccountsController {
                 .status(HttpStatus.OK)
                 .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200, customerDto));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
+        log.info("Incoming Update account {}", customerDto);
+        boolean isUpdated = iAccountsService.updateAccount(customerDto);
+        if (isUpdated) {
+            log.info("Outgoing Update account {}", customerDto);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200, customerDto));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(AccountsConstants.STATUS_500, AccountsConstants.MESSAGE_500, customerDto));
+        }
+    }
 }

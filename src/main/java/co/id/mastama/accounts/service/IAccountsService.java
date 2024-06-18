@@ -10,7 +10,13 @@ public interface IAccountsService {
 
     /**
      * @param mobleNumber - Input Mobile Number
-     * @reutrn Accounts Details based on a given mobileNumber
+     * @return Accounts Details based on a given mobileNumber
      */
     CustomerDto fetchAccount(String mobleNumber);
+
+    /**
+     * @param customerDto - CustomerDto Object
+     * @return boolean indicating if the update of Account details is successful or not
+     */
+    boolean updateAccount(CustomerDto customerDto);
 }
