@@ -39,8 +39,6 @@ public class AccountsServiceImpl implements IAccountsService {
         if (optionalCustomer.isPresent()) {
             throw new CustomerAlreadyExistsException("Customer already registered with given mobileNUmber " + "- " + customer.getMobileNumber());
         }
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("Anonymous");
         Customer savedCustomer = customerRepository.save(customer);
 
         // save customer to accounts
@@ -56,8 +54,6 @@ public class AccountsServiceImpl implements IAccountsService {
         account.setAccountNumber(randomAccNumber);
         account.setAccountType(AccountsConstants.SAVING);
         account.setBranchAddress(AccountsConstants.ADDRESS);
-        account.setCreatedAt(LocalDateTime.now());
-        account.setCreatedBy("Anonymous");
         log.info("End Creating new account {}", customer.getMobileNumber());
         return account;
     }
