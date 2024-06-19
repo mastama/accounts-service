@@ -4,6 +4,10 @@ import co.id.mastama.accounts.constants.AccountsConstants;
 import co.id.mastama.accounts.dto.CustomerDto;
 import co.id.mastama.accounts.dto.ResponseDto;
 import co.id.mastama.accounts.service.IAccountsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -14,6 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(
+        name = "CRUD REST APIs for Accounts in BANKAPAYA",
+        description = "CRUD REST APIs in BANKAPAYA to CREATE, UPDATE, FETCH AND DELETE account details"
+)
 @RestController
 @RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
@@ -23,6 +31,14 @@ public class AccountsController {
 
     private final IAccountsService iAccountsService;
 
+    @Operation(
+            summary = "Create Account REST API",
+            description = "REST API to create new Customer & Account inside BANKAPAYA"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "HTTP Status CREATED"
+    )
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
         log.info("Incoming Create account {}", customerDto);
@@ -33,6 +49,14 @@ public class AccountsController {
                 .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201, customerDto));
     }
 
+    @Operation(
+            summary = "Fetch Account REST API",
+            description = "REST API to fetch or get Customer & Account details based on a mobile number"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
     @GetMapping("/fetch")
     public ResponseEntity<ResponseDto> fetchAccountDetails(@RequestParam
                                                                @Pattern(regexp = "^\\d{11,13}$", message = "MobileNumber must be numbers only and should be between 11 to 13 digits")
@@ -45,6 +69,20 @@ public class AccountsController {
                 .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200, customerDto));
     }
 
+    @Operation(
+            summary = "Update Account REST API",
+            description = "REST API to update Customer & Account details based on a account number"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    })
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         log.info("Incoming Update account {}", customerDto);
@@ -61,6 +99,20 @@ public class AccountsController {
         }
     }
 
+    @Operation(
+            summary = "Delete Account & Customer details REST API",
+            description = "REST API to delete Customer & Account details based on a mobile number"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    })
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam
                                                                 @Pattern(regexp = "^\\d{11,13}$", message = "MobileNumber must be numbers only and should be between 11 to 13 digits")
